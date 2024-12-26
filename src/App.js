@@ -1,23 +1,41 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState, useEffect } from 'react';
+import { AgCharts } from "ag-charts-react";
+
+import { getData } from "./config/utils";
+
+const ChartExample = () => {
+  const [symbol, setSymbol] = useState("OMUSDT");
+  const [options, setOptions] = useState({
+    title: {
+      text: "Annual Fuel Expenditure",
+    },
+    data: [],
+    series: [
+      {
+        type: "line",
+        xKey: "date",
+        yKey: "price",
+        yName: "Price",
+      },
+    ],
+  });
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const newData = await getData(symbol);
+      setOptions({...options, data: newData });
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  return <AgCharts options={options} />;
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ChartExample />
     </div>
   );
 }
